@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <x-seo
+        title="Gimnasio en San Martín de Porres, Lima | DANJER FITNESS"
+        description="Gimnasio en San Martín de Porres con clases de aeróbicos, HIIT, fitness de combate, funcional y musculación. Reserva tus clases online. Planes desde $29 al mes."
+        canonical="{{ url('/') }}" />
+    <x-structured-data />
+
+    <link rel="stylesheet" href="{{ asset('css/home.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;900&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <!-- Navegación -->
+    <nav class="navbar" id="navbar">
+        <div class="container">
+            <div class="nav-wrapper">
+                <div class="logo">
+                    <img src="{{ asset('images/logoDanjer.png') }}" alt="DANJER FITNESS" width="884" height="750" fetchpriority="high">
+                </div>
+                <ul class="nav-menu" id="navMenu">
+                    <li><a href="#inicio" class="nav-link active">Inicio</a></li>
+                    <li><a href="#clases" class="nav-link">Clases</a></li>
+                    <li><a href="#sobre-nosotros" class="nav-link">Sobre Nosotros</a></li>
+                    <li><a href="#planes" class="nav-link">Planes</a></li>
+                    <li><a href="#contacto" class="nav-link">Contacto</a></li>
+                </ul>
+                <div class="nav-buttons">
+                    @guest
+                        <a href="{{ route('login') }}" class="btn btn-outline">Iniciar Sesión</a>
+                        <a href="{{ route('register') }}" class="btn btn-primary">Registrarse</a>
+                    @else
+                    @php
+    $user = auth()->user();
+
+    if ($user->administrator) {
+        $route = 'admin.dashboard';
+    } elseif ($user->trainer) {
+        $route = 'trainer.dashboard';
+    } elseif ($user->client) {
+        $route = 'dashboard';
+    } else {
+        $route = 'home';
+    }
+@endphp
+
+                        <a href="{{ route($route) }}" class="btn btn-primary">Mi Cuenta</a>
+                        <form id="logout-form" action="{{ route('logout') }}" method="POST">
+                            @csrf
+                            <button type="submit" class="btn btn-primary">
+                                Cerrar Sesión
+                            </button>
+                        </form>
+
+                    @endguest
+                </div>
+                <div class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="inicio">
+        <div class="hero-overlay"></div>
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title animate-fade-in">Transforma Tu Cuerpo<br><span>Transforma Tu Vida</span></h1>
+                <p class="hero-subtitle animate-fade-in-delay">Únete a la mejor comunidad fitness y alcanza tus
+                    objetivos con nuestra entrenadora certificada</p>
+                <div class="hero-buttons animate-fade-in-delay-2">
+                    @auth
+                        <a href="{{ route('dashboard') }}" class="btn btn-hero">Ir al Dashboard</a>
+                    @else
+                        <a href="{{ route('register') }}" class="btn btn-hero">Comienza Ahora</a>
+                    @endauth
+                    <a href="#clases" class="btn btn-outline-white">Ver Clases</a>
+                </div>
+            </div>
+        </div>
+        <div class="scroll-indicator">
+            <div class="mouse"></div>
+        </div>
+    </section>
+
+    <!-- Características -->
+    <section class="features">
+        <div class="container">
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        </svg>
+                    </div>
+                    <h3>Entrenadora Certificada</h3>
+                    <p>Comprometida en guiarte en cada paso de tu progreso</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                    </div>
+                    <h3>Reserva Online</h3>
+                    <p>Sistema fácil e intuitivo para reservar tus clases favoritas</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                    </div>
+                    <h3>Horarios Flexibles</h3>
+                    <p>Clases disponibles todo el día para adaptarse a tu ritmo</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                        </svg>
+                    </div>
+                    <h3>Variedad de Clases</h3>
+                    <p>Aeróbicos, Fitness de Combate, HIIT, Funcional, Musculación y mucho más</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Clases Destacadas -->
+    <section class="classes" id="clases">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Nuestras Clases</h2>
+                <p class="section-subtitle">Descubre la variedad de clases que ofrecemos para todos los niveles</p>
+            </div>
+            <div class="classes-grid">
+                <div class="class-card">
+                    <div class="class-image"
+                        style="background-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                        <div class="class-overlay">
+                            <h3>Aeróbicos</h3>
+                            <p>Activa tu energía y mejora tu resistencia</p>
+                        </div>
+                    </div>
+                    <div class="class-info">
+                        <div class="class-details">
+                            <span class="class-duration">⏱ 45 min</span>
+                            <span class="class-level">📊 Todos los niveles</span>
+                        </div>
+                        <button class="btn btn-small">Reservar Clase</button>
+                    </div>
+                </div>
+                <div class="class-card">
+                    <div class="class-image"
+                        style="background-image: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                        <div class="class-overlay">
+                            <h3>Fitness de Combate</h3>
+                            <p>Descarga energía con movimientos potentes</p>
+                        </div>
+                    </div>
+                    <div class="class-info">
+                        <div class="class-details">
+                            <span class="class-duration">⏱ 45 min</span>
+                            <span class="class-level">📊 Intermedio</span>
+                        </div>
+                        <button class="btn btn-small">Reservar Clase</button>
+                    </div>
+                </div>
+                <div class="class-card">
+                    <div class="class-image"
+                        style="background-image: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                        <div class="class-overlay">
+                            <h3>HIIT</h3>
+                            <p>Entrena al máximo en intervalos cortos</p>
+                        </div>
+                    </div>
+                    <div class="class-info">
+                        <div class="class-details">
+                            <span class="class-duration">⏱ 45 min</span>
+                            <span class="class-level">📊 Avanzado</span>
+                        </div>
+                        <button class="btn btn-small">Reservar Clase</button>
+                    </div>
+                </div>
+                <div class="class-card">
+                    <div class="class-image"
+                        style="background-image: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                        <div class="class-overlay">
+                            <h3>Funcional</h3>
+                            <p>Mejora tu fuerza y movilidad con tu propio cuerpo</p>
+                        </div>
+                    </div>
+                    <div class="class-info">
+                        <div class="class-details">
+                            <span class="class-duration">⏱ 45 min</span>
+                            <span class="class-level">📊 Todos los niveles</span>
+                        </div>
+                        <button class="btn btn-small">Reservar Clase</button>
+                    </div>
+                </div>
+                <div class="class-card">
+                    <div class="class-image"
+                        style="background-image: linear-gradient(135deg, #30cfd0 0%, #330867 100%);">
+                        <div class="class-overlay">
+                            <h3>Musculación</h3>
+                            <p>Desarrolla fuerza y tonifica tu cuerpo</p>
+                        </div>
+                    </div>
+                    <div class="class-info">
+                        <div class="class-details">
+                            <span class="class-duration">⏱ 45 min</span>
+                            <span class="class-level">📊 Intermedio</span>
+                        </div>
+                        <button class="btn btn-small">Reservar Clase</button>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center mt-4">
+                @auth
+                    <a href="#clases-completas" class="btn btn-primary btn-ver-mas">
+                        Ver Todas Las Clases
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 8px; vertical-align: middle;">
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                            <polyline points="12 5 19 12 12 19"></polyline>
+                        </svg>
+                    </a>
+                @else
+                    <a href="{{ route('login') }}" class="btn btn-primary btn-ver-mas">
+                        Ver Todas Las Clases
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 8px; vertical-align: middle;">
+                            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                            <polyline points="10 17 15 12 10 7"></polyline>
+                            <line x1="15" y1="12" x2="3" y2="12"></line>
+                        </svg>
+                    </a>
+                @endauth
+            </div>
+        </div>
+    </section>
+
+    <!-- Sobre Nosotros -->
+    <section class="about-us" id="sobre-nosotros">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Sobre Nosotros</h2>
+                <p class="section-subtitle">Conoce nuestra historia y lo que nos hace únicos</p>
+            </div>
+            <div class="about-content">
+                <div class="about-text">
+                    <h3>Nuestra Historia</h3>
+                    <p>
+                        Desde 2022, DANJER FITNESS ha sido más que un gimnasio: somos una comunidad comprometida
+                        con la transformación física y mental de nuestros miembros. Nacimos con la visión de crear
+                        un espacio donde cada persona, sin importar su nivel de condición física, pudiera encontrar
+                        el apoyo y la motivación necesaria para alcanzar sus objetivos.
+                    </p>
+                    <p>
+                        Con más de 3 años de experiencia, hemos ayudado a miles de personas a transformar sus vidas a 
+                        través del deporte. Nuestra fundadora y entrenadora principal trabaja con dedicación para 
+                        ofrecerte un enfoque integral hacia la salud y el bienestar, combinando conocimiento, 
+                        motivación y pasión en cada entrenamiento.
+                    </p>
+                </div>
+                <div class="about-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                            </svg>
+                        </div>
+                        <div class="stat-number">15+</div>
+                        <div class="stat-label">Miembros Activos</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                            </svg>
+                        </div>
+                        <div class="stat-number">10+</div>
+                        <div class="stat-label">Clases Semanales</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                            </svg>
+                        </div>
+                        <div class="stat-number">3</div>
+                        <div class="stat-label">Años de Experiencia</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                            </svg>
+                        </div>
+                        <div class="stat-number">4.9/5</div>
+                        <div class="stat-label">Valoración</div>
+                    </div>
+                </div>
+            </div>
+            <div class="about-values">
+                <h3>Nuestros Valores</h3>
+                <div class="values-grid">
+                    <div class="value-item">
+                        <div class="value-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                                <path d="M2 17l10 5 10-5"></path>
+                                <path d="M2 12l10 5 10-5"></path>
+                            </svg>
+                        </div>
+                        <h4>Compromiso</h4>
+                        <p>Dedicados al éxito de cada miembro</p>
+                    </div>
+                    <div class="value-item">
+                        <div class="value-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                            </svg>
+                        </div>
+                        <h4>Comunidad</h4>
+                        <p>Creamos un ambiente de apoyo mutuo</p>
+                    </div>
+                    <div class="value-item">
+                        <div class="value-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 2L15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2z"></path>
+                            </svg>
+                        </div>
+                        <h4>Excelencia</h4>
+                        <p>Equipamiento de primera y personal calificado</p>
+                    </div>
+                    <div class="value-item">
+                        <div class="value-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                            </svg>
+                        </div>
+                        <h4>Bienestar</h4>
+                        <p>Enfoque integral en salud física y mental</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Planes -->
+    <section class="pricing" id="planes">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Nuestros Planes</h2>
+                <p class="section-subtitle">Elige el plan que mejor se adapte a tus necesidades</p>
+            </div>
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <div class="pricing-header">
+                        <h3>Básico</h3>
+                        <div class="pricing-price">
+                            <span class="currency">$</span>
+                            <span class="amount">29</span>
+                            <span class="period">/mes</span>
+                        </div>
+                    </div>
+                    <ul class="pricing-features">
+                        <li>✓ Acceso al gimnasio</li>
+                        <li>✓ 5 clases al mes</li>
+                        <li>✓ Vestuarios y duchas</li>
+                        <li>✗ Entrenador personal</li>
+                        <li>✗ Nutricionista</li>
+                    </ul>
+                    <button class="btn btn-outline-full">Seleccionar Plan</button>
+                </div>
+                <div class="pricing-card featured">
+                    <div class="featured-badge">Más Popular</div>
+                    <div class="pricing-header">
+                        <h3>Premium</h3>
+                        <div class="pricing-price">
+                            <span class="currency">$</span>
+                            <span class="amount">49</span>
+                            <span class="period">/mes</span>
+                        </div>
+                    </div>
+                    <ul class="pricing-features">
+                        <li>✓ Acceso ilimitado al gimnasio</li>
+                        <li>✓ Clases ilimitadas</li>
+                        <li>✓ Vestuarios y duchas</li>
+                        <li>✓ 2 sesiones de entrenador personal</li>
+                        <li>✗ Nutricionista</li>
+                    </ul>
+                    <button class="btn btn-primary-full">Seleccionar Plan</button>
+                </div>
+                <div class="pricing-card">
+                    <div class="pricing-header">
+                        <h3>Elite</h3>
+                        <div class="pricing-price">
+                            <span class="currency">$</span>
+                            <span class="amount">79</span>
+                            <span class="period">/mes</span>
+                        </div>
+                    </div>
+                    <ul class="pricing-features">
+                        <li>✓ Acceso ilimitado al gimnasio</li>
+                        <li>✓ Clases ilimitadas</li>
+                        <li>✓ Vestuarios y duchas premium</li>
+                        <li>✓ Entrenador personal ilimitado</li>
+                        <li>✓ Plan nutricional personalizado</li>
+                    </ul>
+                    <button class="btn btn-outline-full">Seleccionar Plan</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contacto -->
+    <section class="contact" id="contacto">
+        <div class="container">
+            <div class="contact-wrapper">
+                <div class="contact-info">
+                    <h2>Contáctanos</h2>
+                    <p>¿Tienes alguna pregunta? Estamos aquí para ayudarte</p>
+                    <div class="contact-details">
+                        <div class="contact-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                <circle cx="12" cy="10" r="3"></circle>
+                            </svg>
+                            <div>
+                                <h4>Dirección</h4>
+                                <p>Av. Francisco Luna Pizarro 108-A, San Martín de Porres, Lima</p>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2">
+                                <path
+                                    d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
+                                </path>
+                            </svg>
+                            <div>
+                                <h4>Teléfono</h4>
+                                <p>+51 987 654 321</p>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z">
+                                </path>
+                                <polyline points="22,6 12,13 2,6"></polyline>
+                            </svg>
+                            <div>
+                                <h4>Email</h4>
+                                <p>info@danjerfitness.com</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="contact-form">
+                    <form id="contactForm">
+                        <div class="form-group">
+                            <input type="text" placeholder="Nombre completo" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="email" placeholder="Email" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="tel" placeholder="Teléfono" required>
+                        </div>
+                        <div class="form-group">
+                            <textarea placeholder="Mensaje" rows="4" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary-full">Enviar Mensaje</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>DANJER <span>FITNESS</span></h3>
+                    <p>Transformando vidas a través del fitness desde 2022</p>
+                    <div class="social-links">
+                        <a href="#" aria-label="Facebook">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+                            </svg>
+                        </a>
+                        <a href="#" aria-label="Instagram">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                                <rect x="2" y="2" width="20" height="20" rx="5" ry="5">
+                                </rect>
+                                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                            </svg>
+                        </a>
+                        <a href="#" aria-label="Twitter">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z">
+                                </path>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>Enlaces Rápidos</h4>
+                    <ul>
+                        <li><a href="#inicio">Inicio</a></li>
+                        <li><a href="#clases">Clases</a></li>
+                        <li><a href="#horarios">Horarios</a></li>
+                        <li><a href="#planes">Planes</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Horarios</h4>
+                    <ul>
+                        <li>Lunes - Viernes: 6:00 - 22:00</li>
+                        <li>Sábado: 8:00 - 20:00</li>
+                        <li>Domingo: 9:00 - 14:00</li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Newsletter</h4>
+                    <p>Suscríbete para recibir noticias y promociones</p>
+                    <form class="newsletter-form">
+                        <input type="email" placeholder="Tu email">
+                        <button type="submit" class="btn btn-primary">Suscribirse</button>
+                    </form>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 DANJER FITNESS. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Botón volver arriba -->
+    <button class="back-to-top" id="backToTop" aria-label="Volver arriba">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2">
+            <polyline points="18 15 12 9 6 15"></polyline>
+        </svg>
+    </button>
+
+    <script src="{{ asset('js/home.js') }}"></script>
+</body>
+
+</html>
