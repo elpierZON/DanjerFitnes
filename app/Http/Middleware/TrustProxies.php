@@ -10,9 +10,13 @@ class TrustProxies extends Middleware
     /**
      * The trusted proxies for this application.
      *
+     * En AWS la EC2 solo recibe tráfico del Application Load Balancer
+     * (security group sg-ec2), así que se confía en cualquier proxy para
+     * que Laravel detecte HTTPS y genere enlaces https:// correctos.
+     *
      * @var array<int, string>|string|null
      */
-    protected $proxies;
+    protected $proxies = '*';
 
     /**
      * The headers that should be used to detect proxies.

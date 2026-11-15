@@ -1,0 +1,58 @@
+# DANJER FITNESS - producción en la EC2 (ver docs/DESPLIEGUE_AWS.md)
+# nginx · app (Laravel) · worker (cola de correos) · scheduler · redis
+# Los logs de nginx y Laravel se envían a CloudWatch Logs usando el rol IAM de la EC2.
+
+x-laravel: &laravel
+  build:
+    context: .
+    target: app
+  image: danjer-app:latest
+  env_file: .env
+  depends_on:
+    - redis
+  restart: unless-stopped
+  logging:
+    driver: awslogs
+    options:
+      awslogs-region: us-east-1
+      awslogs-group: /danjer/laravel
+      awslogs-create-group: "true"
+
+services:
+  nginx:
+    build:
+      context: .
+      target: web
+    image: danjer-web:latest
+    ports:
+      - "80:80"
+    depends_on:
+      - app
+    restart: unless-stopped
+    logging:
+      driver: awslogs
+      options:
+        awslogs-region: us-east-1
+        awslogs-group: /danjer/nginx
+        awslogs-create-group: "true"
+
+  app:
+    <<: *laravel
+
+  worker:   # RNF-11: notificaciones en cola
+    <<: *laravel
+    command: php artisan queue:work redis --sleep=3 --tries=3 --max-time=3600
+
+  scheduler:   # tareas programadas (app/Console/Kernel.php)
+    <<: *laravel
+    command: php artisan schedule:work
+
+  redis:   # caché, sesiones y colas
+    image: redis:7-alpine
+    command: redis-server --appendonly yes
+    volumes:
+      - redis-data:/data
+    restart: unless-stopped
+
+volumes:
+  redis-data:

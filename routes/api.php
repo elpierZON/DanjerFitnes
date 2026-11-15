@@ -17,6 +17,11 @@ use App\Http\Controllers\SessionController;
 |
 */
 
+// Health check del Application Load Balancer (Target group: /api/health)
+Route::get('/health', function () {
+    return response()->json(['status' => 'ok']);
+});
+
 // Rutas públicas de autenticación (API)
 Route::post('/register', [RegisterController::class, 'register']);
 Route::post('/login', [LoginController::class, 'login']);
