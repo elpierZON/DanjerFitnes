@@ -88,6 +88,31 @@ Si algo falla, los logs están en **CloudWatch → Log groups → `/danjer/larav
 - Registrar la instancia `danjer-app` y esperar a que salga **healthy**.
 - Crear el ALB con los listeners HTTPS 443 (certificado ACM) y HTTP 80 → redirect a 443.
 
+## 5.1 HTTPS sin dominio: CloudFront delante del ALB
+
+Como no hay dominio propio (requisito de ACM), el HTTPS lo da **Amazon CloudFront**
+con su certificado gratuito `*.cloudfront.net`:
+
+```
+Usuario --HTTPS--> CloudFront (dxxxx.cloudfront.net) --HTTP--> ALB --> EC2 --> RDS
+```
+
+- Distribución con origen `danjer-alb-...elb.amazonaws.com` (HTTP 80),
+  *Viewer protocol policy*: **Redirect HTTP to HTTPS**.
+- *Cache policy*: **CachingDisabled** (la app es dinámica: sesiones, CSRF, Livewire).
+- *Origin request policy*: **AllViewerAndCloudFrontHeaders-2022-06**, para enviar
+  cookies, el `Host` y la cabecera `CloudFront-Forwarded-Proto`.
+- `app/Http/Middleware/TrustProxies.php` lee `CloudFront-Forwarded-Proto` para que
+  Laravel sepa que el visitante entró por HTTPS (el ALB reescribe
+  `X-Forwarded-Proto` a `http`).
+- El security group **`alb`** solo acepta el puerto 80 desde la *prefix list*
+  administrada `com.amazonaws.global.cloudfront.origin-facing`: nadie puede saltarse
+  CloudFront entrando directo al ALB.
+- En el `.env`: `APP_URL=https://dxxxx.cloudfront.net` y `SESSION_SECURE_COOKIE=true`.
+
+Cuando tengan dominio, se puede asociar a la misma distribución con un certificado
+de ACM (en us-east-1) o volver al diseño original (certificado ACM en el ALB).
+
 ## 6. Publicar una nueva versión
 
 ```bash
