@@ -41,7 +41,7 @@ sudo su - ubuntu
 ## 2. Clonar el proyecto y crear el `.env`
 
 ```bash
-git clone https://github.com/<usuario>/DanjerFitnes.git danjer
+git clone -b feat/docker-aws https://github.com/elpierZON/DanjerFitnes.git danjer
 cd danjer
 cp .env.production.example .env
 nano .env
@@ -98,28 +98,28 @@ docker compose run --rm app php artisan migrate --force
 docker compose up -d
 ```
 
-## Pendiente: subir archivos a S3
+## Amazon S3 (fotos y comprobantes)
 
-La arquitectura guarda fotos y comprobantes en el bucket `danjer-prod-media`.
-Laravel necesita un paquete extra para hablar con S3. Agrégalo **en tu PC** (con
-PHP y Composer instalados) y sube el cambio:
+El proyecto ya incluye el paquete `league/flysystem-aws-s3-v3` y el `.env` de
+producción trae `FILESYSTEM_DISK=s3` con `AWS_BUCKET=danjer-prod-media`.
+**No pongas `AWS_ACCESS_KEY_ID` ni `AWS_SECRET_ACCESS_KEY`**: Laravel usa
+automáticamente el rol IAM de la EC2 (por eso el *hop limit* debe ser 2).
 
-```bash
-composer require league/flysystem-aws-s3-v3 "^3.0" --with-all-dependencies
-git add composer.json composer.lock
-git commit -m "Agregar soporte para Amazon S3"
-```
-
-Después, en el `.env` de la EC2 cambia `FILESYSTEM_DISK=local` por
-`FILESYSTEM_DISK=s3`. **No pongas `AWS_ACCESS_KEY_ID` ni `AWS_SECRET_ACCESS_KEY`**:
-Laravel usa automáticamente el rol IAM de la EC2.
-
-En el código:
+Cuando agreguen la subida de archivos, en el código:
 
 ```php
-// Guardar un comprobante
-$ruta = $request->file('comprobante')->store('comprobantes');
+// Guardar un comprobante en el bucket privado
+$ruta = $request->file("comprobante")->store("comprobantes");
 
-// Enlace temporal de 10 minutos (el bucket es privado)
+// Enlace temporal de 10 minutos
 $url = Storage::temporaryUrl($ruta, now()->addMinutes(10));
 ```
+
+## Notas
+
+- `composer.json` fija `config.platform.php = 8.2.0` para que las dependencias
+  siempre sean compatibles con la imagen Docker (PHP 8.2), aunque en tu PC tengas
+  otra versión de PHP.
+- Probado localmente con Docker: build, migraciones contra MySQL 8, `/api/health`,
+  páginas públicas, registro de usuario (Bcrypt), sesión en Redis, worker y
+  scheduler en ejecución.
