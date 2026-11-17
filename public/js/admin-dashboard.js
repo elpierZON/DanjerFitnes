@@ -25,6 +25,15 @@ function navigateToSection(section) {
     });
 }
 
+// Un componente Livewire puede pedir cambiar de sección
+// (p. ej. el atajo "Crear una sala" del formulario de clases).
+window.addEventListener('admin-navigate', function(e) {
+    if (e.detail && e.detail.section) {
+        navigateToSection(e.detail.section);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+});
+
 // Listen to Livewire events
 document.addEventListener('DOMContentLoaded', function() {
     // Mobile menu toggle

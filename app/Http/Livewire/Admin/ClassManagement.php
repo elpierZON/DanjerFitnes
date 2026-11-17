@@ -8,6 +8,7 @@ use App\Models\Room;
 use App\Models\Session;
 use App\Models\Trainer;
 use App\Services\ReservationService;
+use Illuminate\Validation\Rule;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -37,10 +38,18 @@ class ClassManagement extends Component
 
     protected function rules() : array
     {
+        // Una clase nueva solo puede usar tipos activos. Al editar se respeta el
+        // tipo que ya tenía aunque luego se haya desactivado.
+        $classTypeRule = Rule::exists('class_types', 'id');
+
+        if ((string) $this->classTypeId !== (string) $this->originalClassTypeId()) {
+            $classTypeRule = $classTypeRule->where('status', true);
+        }
+
         return [
             'trainerId' => 'required|exists:trainers,id',
             'roomId' => 'required|exists:rooms,id',
-            'classTypeId' => 'required|exists:class_types,id',
+            'classTypeId' => ['required', $classTypeRule],
             'sessionName' => 'required|string|max:100',
             'sessionDescription' => 'required|string|max:300',
             'startDatetime' => 'required|date_format:Y-m-d\TH:i',
@@ -102,15 +111,37 @@ class ClassManagement extends Component
         return Room::orderBy('name')->get();
     }
 
+    /** Tipo que tenía la clase en edición (null al crear). */
+    private function originalClassTypeId()
+    {
+        return $this->selectedSessionId
+            ? Session::whereKey($this->selectedSessionId)->value('class_type_id')
+            : null;
+    }
+
     public function getClassTypes()
     {
-        return ClassType::orderBy('name')->get();
+        // Los tipos se administran en «Tipos y Salas» (ClassCatalog).
+        $keep = $this->originalClassTypeId();
+
+        return ClassType::query()
+            ->where(fn($q) => $q->active()->when($keep, fn($q) => $q->orWhere('id', $keep)))
+            ->orderBy('name')
+            ->get();
     }
 
     public function openCreateModal()
     {
         $this->resetForm();
         $this->showCreateModal = true;
+    }
+
+    /** Atajo desde el formulario: lleva a «Tipos y Salas» en la pestaña pedida. */
+    public function goToCatalog($tab)
+    {
+        $this->closeCreateModal();
+        $this->emitTo('admin.class-catalog', 'showTab', $tab);
+        $this->dispatchBrowserEvent('admin-navigate', ['section' => 'catalog']);
     }
 
     public function closeCreateModal()

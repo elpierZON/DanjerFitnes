@@ -184,6 +184,10 @@
                                 @endforeach
                             </select>
                             @error('classTypeId') <span class="error">{{ $message }}</span> @enderror
+                            <small class="form-hint">
+                                ¿No está el tipo?
+                                <button type="button" class="link-button" wire:click="goToCatalog('types')">Créalo en Tipos y Salas</button>
+                            </small>
                         </div>
 
                         <div class="form-group">
@@ -210,7 +214,10 @@
                                 @endforeach
                             </select>
                             @error('roomId') <span class="error">{{ $message }}</span> @enderror
-                            <small class="form-hint">La capacidad de la clase es la de la sala elegida.</small>
+                            <small class="form-hint">
+                                La capacidad de la clase es la de la sala elegida.
+                                <button type="button" class="link-button" wire:click="goToCatalog('rooms')">Crear una sala</button>
+                            </small>
                         </div>
 
                         <div class="form-group">

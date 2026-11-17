@@ -27,4 +27,9 @@
     <div id="classes-section" class="admin-dashboard-section" style="display: none;">
         <livewire:admin.class-management />
     </div>
+
+    <!-- Class Types & Rooms Section -->
+    <div id="catalog-section" class="admin-dashboard-section" style="display: none;">
+        <livewire:admin.class-catalog />
+    </div>
 </x-admin-dashboard-layout>
